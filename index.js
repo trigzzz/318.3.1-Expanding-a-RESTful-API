@@ -6,6 +6,7 @@ const posts = require("./routes/posts");
 
 const error = require("./utilities/error");
 
+const comments = require("./routes/comments");
 const app = express();
 const port = 3000;
 
@@ -116,3 +117,5 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
   console.log(`Server listening on port: ${port}.`);
 });
+
+app.use("/api/comments", comments);

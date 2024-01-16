@@ -2,11 +2,18 @@ const express = require("express");
 const router = express.Router();
 
 const posts = require("../data/posts");
+const users = require("../data/users");
+const comments = require("../data/comments");
 const error = require("../utilities/error");
 
 router
   .route("/")
   .get((req, res) => {
+    const userId = req.query.userId;
+    const filteredPosts = userId
+      ? posts.filter((post) => post.userId == userId)
+      : posts;
+
     const links = [
       {
         href: "posts/:id",
@@ -15,7 +22,7 @@ router
       },
     ];
 
-    res.json({ posts, links });
+    res.json({ posts: filteredPosts, links });
   })
   .post((req, res, next) => {
     if (req.body.userId && req.body.title && req.body.content) {
@@ -76,5 +83,20 @@ router
     if (post) res.json(post);
     else next();
   });
+
+router.route("/:id/comments").get((req, res, next) => {
+  const postId = req.params.id;
+  const postComments = comments.filter((comment) => comment.postId == postId);
+
+  const links = [
+    {
+      href: `/api/posts/${postId}/comments`,
+      rel: "",
+      type: "GET",
+    },
+  ];
+
+  res.json({ postComments, links });
+});
 
 module.exports = router;
